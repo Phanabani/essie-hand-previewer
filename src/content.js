@@ -13,9 +13,9 @@ function sleep(ms) {
 
 
 /**
- * @return {Number} The stored skin tone
+ * @return {number} The stored skin tone
  */
- async function getSkinTone() {
+async function getSkinTone() {
     let skinTone;
     try {
         skinTone = (await storage.get('skinTone')).skinTone;
@@ -35,10 +35,10 @@ function sleep(ms) {
 
 
 /**
- * @param {Number} skinTone
- * @return {Number} Whether the storage set was successful or not
+ * @param {number} the new skin tone (corresponds to Essie's filename conventions)
+ * @return {boolean} whether the storage set was successful or not
  */
- async function setSkinTone(skinTone) {
+async function setSkinTone(skinTone) {
     try {
         await storage.set({skinTone: skinTone});
     } catch (e) {
@@ -49,17 +49,30 @@ function sleep(ms) {
 }
 
 
+/**
+ * Search for a nail polish title to guess if this is a nail polish preview page
+ * @return {boolean} whether a nail polish title was found on the page
+ */
 function isNailPolishPage() {
     return document.querySelector('.product-quickview__title') !== null;
 }
 
 
+/**
+ * @return {?string} the nail polish name
+ */
 function getNailPolishName() {
-    return document.querySelector('.product-quickview__title>span').textContent;
+    const title = document.querySelector('.product-quickview__title>span');
+    return (title) ? title.textContent : null;
 }
 
 
-function getHandPreviewButtons() {
+/**
+ * Get the preview buttons for the currently selected nail polish (if they
+ * exist).
+ * @return {?object[]} an array of preview button elements
+ */
+function getPreviewButtons() {
     if (!isNailPolishPage())
         return null;
 
@@ -72,12 +85,23 @@ function getHandPreviewButtons() {
 }
 
 
+/**
+ * Search through preview buttons on the page and click the one that
+ * corresponds to the stored skin tone. The filename conventions on the site
+ * aren't always consistent, so this function will try several matches in
+ * succession:
+ *   1. Match an image with the stored skin tone
+ *   2. Match an image with all skin tones
+ *   3. Match any hand image
+ *   4. Match any image that has the skin tone value in the file name
+ * @return {boolean} whether an image was clicked
+ */
 async function clickHandPreviewButton() {
     const skinTone = await getSkinTone();
     if (skinTone === null)
         return false;
 
-    const previewButtons = getHandPreviewButtons();
+    const previewButtons = getPreviewButtons();
     if (previewButtons === null)
         return false;
 
@@ -85,11 +109,18 @@ async function clickHandPreviewButton() {
     for (let b of previewButtons) {
         let imgSrc = new URL(b.childNodes[0].src);
         let filename = imgSrc.pathname.split('/').slice(-1)[0];
+
+        // Match skin tone or all hands
         let match = filename.match(previewFilePattern);
 
         if (match === null) {
+            // Try to match the skin tone number or just any hand and store it
+            // as a last resort if we fail to match anything else
             let tryMatchNumber = filename.match(previewFileTryMatchNumberPattern);
-            if ((tryMatchNumber && tryMatchNumber.groups[skinTone] == skinTone) || filename.match(/hand/i)) {
+            let matchedNumber = (
+                tryMatchNumber && tryMatchNumber.groups[skinTone] == skinTone;
+            )
+            if (matchedNumber || filename.match(/hand/i)) {
                 lastResortImage = b;
             }
             continue;
@@ -110,6 +141,9 @@ async function clickHandPreviewButton() {
 }
 
 
+/**
+ * Add change handlers to the nail polish color sliders.
+ */
 async function addColorSliderEventHandlers() {
 
     function handler(e) {
@@ -127,6 +161,10 @@ async function addColorSliderEventHandlers() {
     }
 }
 
+/**
+ * Add click handlers to the nail polish color family buttons. When the color
+ * family is changed, event handlers will be added to the new color slider.
+ */
 async function addColorFamilyEventHandlers() {
     const familyButtons = document.querySelectorAll(
         'div.select-color-family__family>button'

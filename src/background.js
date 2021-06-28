@@ -6,7 +6,7 @@ const storage = browser.storage.local;
 
 
 /**
- * @return {Number} The stored skin tone
+ * @return {number} The stored skin tone
  */
 async function getSkinTone() {
     let skinTone;
@@ -28,8 +28,8 @@ async function getSkinTone() {
 
 
 /**
- * @param {Number} skinTone
- * @return {Number} Whether the storage set was successful or not
+ * @param {number} the new skin tone (corresponds to Essie's filename conventions)
+ * @return {boolean} whether the storage set was successful or not
  */
 async function setSkinTone(skinTone) {
     try {
