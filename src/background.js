@@ -64,20 +64,18 @@ function updateIcon(skinTone) {
 
 
 async function setUp() {
-    await getSkinTone();
+    if ((await getSkinTone()) !== null)
+        return
+    if (await setSkinTone(DEFAULT_SKIN_TONE))
+        updateIcon(DEFAULT_SKIN_TONE);
 }
 
 
-function clickHandler() {
-    getSkinTone().then(skinTone => {
-        newSkinTone = (skinTone === MAX_SKIN_TONE) ? MIN_SKIN_TONE : skinTone + 1;
-        setSkinTone(newSkinTone).then(success => {
-            if (success)
-                updateIcon(newSkinTone);
-        });
-    }).catch(e => {
-        console.log(e);
-    });
+async function clickHandler() {
+    const skinTone = await getSkinTone();
+    newSkinTone = (skinTone === MAX_SKIN_TONE) ? MIN_SKIN_TONE : skinTone + 1;
+    if (await setSkinTone(newSkinTone))
+        updateIcon(newSkinTone);
 }
 
 
