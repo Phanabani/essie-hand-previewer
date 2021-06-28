@@ -6,7 +6,7 @@ const storage = browser.storage.local;
 
 
 /**
- * @return {number} The stored skin tone
+ * @return {?number} The stored skin tone
  */
 async function getSkinTone() {
     let skinTone;
@@ -17,13 +17,7 @@ async function getSkinTone() {
         return null;
     }
 
-    if (skinTone === undefined) {
-        // Value wasn't set; set it to a default value now and return based on
-        // the success of the setter operation
-        return (await setSkinTone(DEFAULT_SKIN_TONE)) ? skinTone : null;
-    }
-
-    return skinTone;
+    return (skinTone !== undefined) ? skinTone : null;
 }
 
 
@@ -79,4 +73,5 @@ async function clickHandler() {
 }
 
 
+setUp();
 browser.browserAction.onClicked.addListener(clickHandler);
