@@ -4,7 +4,7 @@
   "name": "Essie Hand Previewer",
   "version": "1.0",
 
-  "description": "Automatically selects the Essie nail polish hand preview for your skin tone.",
+  "description": "Automatically select the Essie nail polish hand preview for your skin tone.",
 
   "icons": {
     "64": "icons/icon-skin-tone-2.svg"
