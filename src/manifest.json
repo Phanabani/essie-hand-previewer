@@ -10,12 +10,6 @@
     "64": "icons/icon-skin-tone-2.svg"
   },
 
-  "browser_specific_settings": {
-    "gecko": {
-      "id": ""
-    }
-  },
-
   "permissions": [
     "storage"
   ],
