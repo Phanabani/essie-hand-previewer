@@ -112,7 +112,7 @@ async function clickHandPreviewButton() {
             // as a last resort if we fail to match anything else
             let tryMatchNumber = filename.match(previewFileTryMatchNumberPattern);
             let matchedNumber = (
-                tryMatchNumber && tryMatchNumber.groups[skinTone] == skinTone;
+                tryMatchNumber && tryMatchNumber.groups[skinTone] == skinTone
             )
             if (matchedNumber || filename.match(/hand/i)) {
                 lastResortImage = b;
