@@ -1,4 +1,4 @@
-# Essie Hand Previewer
+# Essie Hand Previewer (Firefox Addon)
 
 Automatically select the Essie nail polish hand preview for your skin tone when
 browsing nail polishes on their website.
