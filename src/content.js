@@ -68,8 +68,9 @@ function getPreviewButtons() {
  * succession:
  *   1. Match an image with the stored skin tone
  *   2. Match an image with all skin tones
- *   3. Match any hand image
- *   4. Match any image that has the skin tone value in the file name
+ *   3. Match images that looks like ESSIE5.jpg, sorting by the number in the
+ *      filename and selecting the skin tone based on the relative order
+ *   4. Match any hand image
  * @return {boolean} whether an image was clicked
  */
 async function clickHandPreviewButton() {
