@@ -1,7 +1,3 @@
-const DEFAULT_SKIN_TONE = 1;
-const MIN_SKIN_TONE = 1;
-const MAX_SKIN_TONE = 3;
-
 const storage = browser.storage.local;
 const normalFilePattern = /^.+(?:(?:hand.?(?<skinTone>\d+))|(?<allHands>all.?hands)).*\.[a-z]+$/i;
 const strangeFilePattern = /essie(?<number>\d+)\.[a-z]+$/i;
@@ -29,25 +25,11 @@ async function getSkinTone() {
 
 
 /**
- * @param {number} the new skin tone (corresponds to Essie's filename conventions)
- * @return {boolean} whether the storage set was successful or not
- */
-async function setSkinTone(skinTone) {
-    try {
-        await storage.set({skinTone: skinTone});
-    } catch (e) {
-        console.error(e);
-        return false;
-    }
-    return true;
-}
-
-
-/**
  * Search for a nail polish title to guess if this is a nail polish preview page
  * @return {boolean} whether a nail polish title was found on the page
  */
 function isNailPolishPage() {
+    // noinspection JSIncompatibleTypesComparison
     return document.querySelector('.product-quickview__title') !== null;
 }
 
@@ -64,7 +46,7 @@ function getNailPolishName() {
 /**
  * Get the preview buttons for the currently selected nail polish (if they
  * exist).
- * @return {?object[]} an array of preview button elements
+ * @return {NodeListOf<Element>} an array of preview button elements
  */
 function getPreviewButtons() {
     if (!isNailPolishPage())
@@ -123,7 +105,7 @@ async function clickHandPreviewButton() {
             continue;
         }
 
-        if (match.groups['skinTone'] == skinTone || match.groups['allHands']) {
+        if (Number(match.groups.skinTone) === skinTone || match.groups.allHands) {
             b.click();
             return true;
         }

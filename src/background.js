@@ -22,7 +22,7 @@ async function getSkinTone() {
 
 
 /**
- * @param {number} the new skin tone (corresponds to Essie's filename conventions)
+ * @param skinTone {number} the new skin tone (corresponds to Essie's filename conventions)
  * @return {boolean} whether the storage set was successful or not
  */
 async function setSkinTone(skinTone) {
@@ -65,7 +65,7 @@ function updateIcon(skinTone) {
 
 async function setUp() {
     if ((await getSkinTone()) !== null)
-        return
+        return;
     if (await setSkinTone(DEFAULT_SKIN_TONE))
         updateIcon(DEFAULT_SKIN_TONE);
 }
@@ -89,5 +89,7 @@ async function clickHandler() {
 }
 
 
-setUp();
+setUp().catch(e => {
+    console.error(e);
+});
 browser.browserAction.onClicked.addListener(clickHandler);
