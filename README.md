@@ -11,7 +11,7 @@ browsing nail polishes on their website.
 
 ## Install
 
-Visit the Firefox addon page!
+Install from the [Firefox addon page!](https://addons.mozilla.org/addon/essie-hand-previewer/)
 
 ## Usage
 
