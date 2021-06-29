@@ -3,8 +3,8 @@ const MIN_SKIN_TONE = 1;
 const MAX_SKIN_TONE = 3;
 
 const storage = browser.storage.local;
-const previewFilePattern = /^.+(?:(?:hand.?(?<skinTone>\d+))|(?<allHands>all.?hands)).*\.[a-z]+$/i;
-const previewFileTryMatchNumberPattern = /(?<skinTone>\d)\.[a-z]+$/i;
+const normalFilePattern = /^.+(?:(?:hand.?(?<skinTone>\d+))|(?<allHands>all.?hands)).*\.[a-z]+$/i;
+const strangeFilePattern = /essie(?<number>\d+)\.[a-z]+$/i;
 
 
 function sleep(ms) {
@@ -100,21 +100,24 @@ async function clickHandPreviewButton() {
         return false;
 
     let lastResortImage;
+    let strangeMatches = [];
     for (let b of previewButtons) {
         let imgSrc = new URL(b.childNodes[0].src);
         let filename = imgSrc.pathname.split('/').slice(-1)[0];
 
         // Match skin tone or all hands
-        let match = filename.match(previewFilePattern);
+        let match = filename.match(normalFilePattern);
 
         if (match === null) {
-            // Try to match the skin tone number or just any hand and store it
-            // as a last resort if we fail to match anything else
-            let tryMatchNumber = filename.match(previewFileTryMatchNumberPattern);
-            let matchedNumber = (
-                tryMatchNumber && tryMatchNumber.groups[skinTone] == skinTone
-            )
-            if (matchedNumber || filename.match(/hand/i)) {
+            let strangeMatch = filename.match(strangeFilePattern);
+            if (strangeMatch)
+                strangeMatches.push({
+                    number: Number(strangeMatch.groups.number),
+                    button: b
+                });
+            // Try to match any hand image and store it as a last resort if we
+            // fail to match anything else
+            if (filename.match(/hand/i)) {
                 lastResortImage = b;
             }
             continue;
@@ -123,6 +126,30 @@ async function clickHandPreviewButton() {
         if (match.groups['skinTone'] == skinTone || match.groups['allHands']) {
             b.click();
             return true;
+        }
+    }
+
+    if (strangeMatches.length !== 0) {
+        // "Strange matches" are files which look like ESSIE5.jpg. The
+        // numbering is inconsistent, but it appears that the highest number is
+        // the lightest shade, and the lowest number is the darkest shade.
+        if (strangeMatches.length !== 3) {
+            // Unexpected number of strange matches, click the first one
+            strangeMatches[0].button.click();
+            return true;
+        }
+        // Make sure they are sorted in ascending order (if x is greater, swap)
+        strangeMatches.sort((a, b) => Number(a.number > b.number));
+        switch (skinTone) {
+            case 1:
+                strangeMatches[2].button.click();
+                return true;
+            case 2:
+                strangeMatches[1].button.click();
+                return true;
+            case 3:
+                strangeMatches[0].button.click();
+                return true;
         }
     }
 
