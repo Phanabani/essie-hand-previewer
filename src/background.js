@@ -37,12 +37,21 @@ async function setSkinTone(skinTone) {
 
 
 function updateIcon(skinTone) {
-    if (skinTone < MIN_SKIN_TONE || skinTone > MAX_SKIN_TONE) {
+    if ((skinTone < MIN_SKIN_TONE || skinTone > MAX_SKIN_TONE) && skinTone !== -1) {
         console.error(`Essie Hand Previewer: Invalid skin tone ${skinTone}`);
         return;
     }
 
-    const iconPath = `icons/icon-skin-tone-${skinTone}.svg`;
+    let iconPath;
+    let title;
+    if (skinTone === -1) {
+        iconPath = 'icons/icon-disabled.svg';
+        title = 'Essie Hand Previewer (Disabled)';
+    } else {
+        iconPath = `icons/icon-skin-tone-${skinTone}.svg`;
+        title = `Essie Hand Previewer (Skin tone ${skinTone})`;
+    }
+
     browser.browserAction.setIcon({
         path: {
             16: iconPath,
@@ -50,10 +59,7 @@ function updateIcon(skinTone) {
             64: iconPath,
         }
     });
-    browser.browserAction.setTitle({
-        // Screen readers can see the title
-        title: `Essie Hand Previewer (Skin tone ${skinTone})`
-    }); 
+    browser.browserAction.setTitle({title: title});
 }
 
 
@@ -67,7 +73,17 @@ async function setUp() {
 
 async function clickHandler() {
     const skinTone = await getSkinTone();
-    newSkinTone = (skinTone === MAX_SKIN_TONE) ? MIN_SKIN_TONE : skinTone + 1;
+    let newSkinTone;
+    switch (skinTone) {
+        case -1:
+            newSkinTone = MIN_SKIN_TONE;
+            break;
+        case MAX_SKIN_TONE:
+            newSkinTone = -1;
+            break;
+        default:
+            newSkinTone = skinTone + 1;
+    }
     if (await setSkinTone(newSkinTone))
         updateIcon(newSkinTone);
 }

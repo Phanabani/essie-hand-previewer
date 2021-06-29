@@ -92,7 +92,7 @@ function getPreviewButtons() {
  */
 async function clickHandPreviewButton() {
     const skinTone = await getSkinTone();
-    if (skinTone === null)
+    if (skinTone === null || skinTone === -1)
         return false;
 
     const previewButtons = getPreviewButtons();
@@ -171,5 +171,9 @@ async function addColorFamilyEventHandlers() {
 clickHandPreviewButton().catch(e => {
     console.error(e);
 });
-addColorFamilyEventHandlers();
-addColorSliderEventHandlers();
+addColorFamilyEventHandlers().catch(e => {
+    console.error(e);
+});
+addColorSliderEventHandlers().catch(e => {
+    console.error(e);
+});
